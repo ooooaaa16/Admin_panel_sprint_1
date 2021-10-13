@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 import datetime
 from datetime import datetime
 
+
 @dataclass(frozen=True)
 class Genre:
     name: str
@@ -38,6 +39,7 @@ class Person:
     created_at: datetime
     updated_at: datetime
     id: uuid.UUID = field(default_factory=uuid.uuid4)
+
 
 @dataclass(frozen=True)
 class Genre_Film_Work:
@@ -97,9 +99,9 @@ def Load_Genre(connection: sqlite3.Connection, pg_conn: _connection):
 
         if readed_number_of_rows < WRITE_NUMBER_OF_ROWS:
             with pg_conn.cursor() as pg_cursor:
-                args = ','.join(pg_cursor.mogrify(
-                    "(%s, %s, %s, %s, %s)", [item.id, item.name, item.description, item.created_at, item.updated_at]
-                ).decode() for item in genres)
+                args = ','.join(pg_cursor.mogrify("(%s, %s, %s, %s, %s)", [item.id, item.name, item.description,
+                                                                           item.created_at, item.updated_at]
+                                                  ).decode() for item in genres)
                 # вставляем в таблицу
                 insert_into_table(pg_cursor, args, table_name, column_names)
             inserted_rows = inserted_rows + len(genres)
@@ -135,11 +137,14 @@ def Load_Film_Work(connection: sqlite3.Connection, pg_conn: _connection):
                                         updated_at=row[9], id=row[0]))
         if readed_number_of_rows < WRITE_NUMBER_OF_ROWS:
             with pg_conn.cursor() as pg_cursor:
-                args = ','.join(pg_cursor.mogrify(
-                    "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    [item.id, item.title, item.description, item.creation_date,
-                     item.certificate, item.file_path, item.rating, item.type, item.created_at,
-                     item.updated_at]
+                args = ','.join(pg_cursor.mogrify("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",[item.id, item.title,
+                                                                                              item.description,
+                                                                                              item.creation_date,
+                                                                                              item.certificate,
+                                                                                              item.file_path,
+                                                                                              item.rating, item.type,
+                                                                                              item.created_at,
+                                                                                              item.updated_at]
                 ).decode() for item in film_works)
                 insert_into_table(pg_cursor, args, table_name, column_names)
             inserted_rows = inserted_rows + len(film_works)
@@ -169,8 +174,7 @@ def Load_Person(connection: sqlite3.Connection, pg_conn: _connection):
     while rows:
         readed_number_of_rows = readed_number_of_rows + len(rows)
         for row in rows:
-            persons.append(Person(full_name=row[1], birth_date=row[2], created_at=row[3], updated_at=row[4],
-                                  id=row[0]))
+            persons.append(Person(full_name=row[1], birth_date=row[2], created_at=row[3], updated_at=row[4], id=row[0]))
         if readed_number_of_rows < WRITE_NUMBER_OF_ROWS:
             with pg_conn.cursor() as pg_cursor:
                 args = ','.join(pg_cursor.mogrify(
@@ -209,9 +213,9 @@ def Load_Genre_Film_Work(connection: sqlite3.Connection, pg_conn: _connection):
                                                     id=row[0]))
         if readed_number_of_rows < WRITE_NUMBER_OF_ROWS:
             with pg_conn.cursor() as pg_cursor:
-                args = ','.join(pg_cursor.mogrify(
-                    "(%s, %s, %s, %s)", [item.id, item.film_work_id, item.genre_id, item.created_at]
-                ).decode() for item in genre_film_works)
+                args = ','.join(pg_cursor.mogrify("(%s, %s, %s, %s)", [item.id, item.film_work_id, item.genre_id,
+                                                                       item.created_at]
+                                                  ).decode() for item in genre_film_works)
                 insert_into_table(pg_cursor, args, table_name, column_names)
             inserted_rows = inserted_rows + len(genre_film_works)
             # обнуляем переменные
@@ -243,9 +247,9 @@ def Load_Person_Film_Work(connection: sqlite3.Connection, pg_conn: _connection):
                                                       created_at=row[4], id=row[0]))
         if readed_number_of_rows < WRITE_NUMBER_OF_ROWS:
             with pg_conn.cursor() as pg_cursor:
-                args = ','.join(pg_cursor.mogrify(
-                    "(%s, %s, %s, %s, %s)", [item.id, item.film_work_id, item.person_id, item.role, item.created_at]
-                ).decode() for item in person_film_works)
+                args = ','.join(pg_cursor.mogrify("(%s, %s, %s, %s, %s)", [item.id, item.film_work_id, item.person_id,
+                                                                           item.role, item.created_at]
+                                                  ).decode() for item in person_film_works)
                 insert_into_table(pg_cursor, args, table_name, column_names)
             inserted_rows = inserted_rows + len(person_film_works)
             # обнуляем переменные
