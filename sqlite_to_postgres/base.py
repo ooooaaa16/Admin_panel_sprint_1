@@ -17,3 +17,4 @@ DATABASE = {
 
 SQLITE_FN = '../sqlite_to_postgres/db.sqlite'
 SCHEMA_DESIGN_FN = '../schema_design/db_schema.sql'
+A=10
