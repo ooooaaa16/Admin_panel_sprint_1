@@ -89,3 +89,5 @@ local_settings.py
 
 .env
 db.sqlite3
+/movies_admin/config/settings/env_vars.py
+/movies_admin/config/settings/env_var.json

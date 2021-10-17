@@ -8,8 +8,8 @@ N_TIMES = 4
 # коннект к бд
 DATABASE = {
     'dbname': 'movies',
-    'user': 'postgres',
-    'password': 'password',
+    'user': os.environ['db_user'],
+    'password': os.environ['db_password'],
     'host': os.environ.get('DB_HOST', '127.0.0.1'),
     'port': os.environ.get('DB_PORT', 5432),
     'options': '-c search_path=content'

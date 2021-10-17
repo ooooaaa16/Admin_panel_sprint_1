@@ -9,13 +9,9 @@ from dataclasses import dataclass, field
 import datetime
 from datetime import datetime
 
-from base import *
-
 import logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-
+from base import *
 
 @dataclass(frozen=True)
 class Genre:
@@ -222,6 +218,7 @@ def load_person_film_work(connection: sqlite3.Connection, pg_conn: _connection):
 
 def load_from_sqlite(connection: sqlite3.Connection, pg_conn: _connection):
     """Основной метод загрузки данных из SQLite в Postgres"""
+    """ В функцих заложено преобразование с соответствующих таблиц"""
     logger.info("It is starting of loading")
     load_genre(connection, pg_conn)
     load_film_work(connection, pg_conn)
@@ -232,14 +229,23 @@ def load_from_sqlite(connection: sqlite3.Connection, pg_conn: _connection):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger()
     logger.info("Привет")
+
     try:
         with psycopg2.connect(**DATABASE, cursor_factory=DictCursor) as pg_conn:
             create_db_schema_in_postgres(pg_conn, SCHEMA_DESIGN_FN)
-        with sqlite3.connect(SQLITE_FN) as sqlite_conn, psycopg2.connect(**DATABASE,
-                                                                         cursor_factory=DictCursor) as pg_conn:
-            load_from_sqlite(sqlite_conn, pg_conn)
-    except (psycopg2.DatabaseError, sqlite3.Error, Exception) as ex:
+            pg_conn.commit()
+
+        sqlite_conn=sqlite3.connect(SQLITE_FN)
+        pg_conn=psycopg2.connect(**DATABASE,cursor_factory=DictCursor)
+        load_from_sqlite(sqlite_conn, pg_conn)
+
+        sqlite_conn.commit()
+        pg_conn.commit()
+
+    except (psycopg2.DatabaseError, sqlite3.Error, NameError, Exception) as ex:
         logger.critical(ex)
     finally:
         sqlite_conn.close()
